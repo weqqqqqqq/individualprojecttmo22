@@ -3,9 +3,7 @@ import string
 import secrets
 
 def check_password_strength(password):
-    """Проверяет пароль на соответствие требованиям."""
     errors = []
-    
     if len(password) < 8:
         errors.append("Длина пароля меньше 8 символов.")
     if not any(char.islower() for char in password):
@@ -16,11 +14,9 @@ def check_password_strength(password):
         errors.append("Отсутствуют цифры.")
     if not any(char in string.punctuation for char in password):
         errors.append("Отсутствуют специальные символы (!, @, #, $, и т.д.).")
-        
     return len(errors) == 0, errors
 
 def generate_strong_password(length=14):
-    """Генерирует криптографически стойкий пароль."""
     alphabet = string.ascii_letters + string.digits + string.punctuation
     while True:
         password = ''.join(secrets.choice(alphabet) for _ in range(length))
@@ -28,38 +24,27 @@ def generate_strong_password(length=14):
         if is_strong:
             return password
 
-# --- НАСТРОЙКА ИНТЕРФЕЙСА СТРАНИЦЫ ---
 st.set_page_config(page_title="Защита ПД", page_icon="🔐")
-
 st.title("🔐 Анализатор криптостойкости паролей")
-st.write("Инструмент разработан в рамках индивидуального проекта на тему «Утечка персональных данных». Проверка осуществляется локально, данные никуда не сохраняются.")
+st.write("Инструмент разработан в рамках индивидуального проекта на тему «Утечка персональных данных».")
 
-# Поле ввода (type="password" скрывает вводимые символы точками)
 user_password = st.text_input("Введите ваш пароль для аудита безопасности:", type="password")
 
-# Кнопка для запуска проверки
 if st.button("Проверить надежность"):
     if user_password:
         is_strong, errors = check_password_strength(user_password)
-        
         st.write("---")
         st.subheader("Результаты проверки:")
-        
         if is_strong:
             st.success("✅ ВЕРДИКТ: Ваш пароль надежен и соответствует стандартам безопасности.")
-            st.balloons() # Небольшая анимация успеха
+            st.balloons()
         else:
             st.error("❌ ВЕРДИКТ: Пароль уязвим! Обнаружены следующие проблемы:")
-            # Вывод списка ошибок
             for error in errors:
                 st.warning(f"⚠️ {error}")
-                
             st.info("💡 Рекомендация: Смените пароль для предотвращения утечки ваших данных.")
-            
-            # Генерация и красивый вывод нового пароля
             new_password = generate_strong_password(length=14)
             st.write("**Сгенерированный безопасный пароль:**")
-            # st.code делает удобный блок с кнопкой "Копировать"
-            st.code(new_password, language="") 
+            st.code(new_password, language="")
     else:
         st.error("Пожалуйста, введите пароль в поле выше.")
